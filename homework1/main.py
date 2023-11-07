@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 from layer import Layer
+from mlp import MLP
+from cce import CCE
 
 digits = load_digits()
 
@@ -35,13 +37,23 @@ target_input_tuples = [(2 * (digits.data[i].astype(np.float32) / 16) - 1, one_ho
 
 minibatch_generator = shuffle_data(10, target_input_tuples)
 
-layer = Layer("sigmoid", 2, 3)
+input, target = minibatch_generator.__next__()
 
-result = layer.forward([1, 2, -1])
+mlp = MLP(3, [64, 10, 10])
 
-print(result)
+output = mlp.forward(input)
+
+cce = CCE()
+
+error = cce(output, target)
+
+print(error)
+
 
 '''
+
+for layer in mlp.layers:
+    print(layer.weights_matrix.shape)
 
 # Das hier verwenden um durch die batches durchzuiterieren und das Training durchzuführen.
 for i in range(0, 1):
@@ -51,6 +63,12 @@ for i in range(0, 1):
     plt.gray()
     plt.matshow(inputs[5].reshape(8, 8))
     plt.show()
+    
+for i in range(0, 1):
+    inputs, targets = minibatch_generator.__next__()
+    results = layer.forward(inputs)
+    print(results)
+    print(np.sum(results[9]))
 
 
 print(len(digits.images))

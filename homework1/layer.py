@@ -12,11 +12,11 @@ class Layer:
             self.activation = SoftmaxActivation()
         else:
             self.activation = None
-        self.weights_bias_matrix = np.random.normal(0.0, 0.2, size=(input_size, number_of_units))
-        print(self.weights_bias_matrix)
+        self.weights_matrix = np.random.normal(0.0, 0.2, size=(input_size, number_of_units))
+        # print(self.weights_bias_matrix)
         self.bias = np.zeros(number_of_units)
 
     def forward(self, input_array):
-        pre_bias = np.matmul(input_array, self.weights_bias_matrix)
+        pre_bias = np.matmul(input_array, self.weights_matrix)
         preactivation = pre_bias + self.bias
-        return self.activation.call(preactivation)
+        return self.activation((preactivation))
