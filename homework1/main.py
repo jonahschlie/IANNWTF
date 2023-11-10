@@ -9,9 +9,9 @@ from cce import CCE
 digits = load_digits()
 
 
-def one_hot_encoding(target):
+def one_hot_encoding(target_number):
     encoded = np.zeros(10)
-    encoded[target] = 1
+    encoded[target_number] = 1
     return encoded
 
 
@@ -35,22 +35,56 @@ def shuffle_data(batch_size, tuples_array):
 target_input_tuples = [(2 * (digits.data[i].astype(np.float32) / 16) - 1, one_hot_encoding(digits.target[i])) for i in
                        range(len(digits.data))]
 
-minibatch_generator = shuffle_data(10, target_input_tuples)
+minibatch_generator = shuffle_data(2, target_input_tuples)
 
-input, target = minibatch_generator.__next__()
-
-mlp = MLP(3, [64, 10, 10])
-
-output = mlp.forward(input)
-
+mlp = MLP(2, [64, 10])
 cce = CCE()
 
-error = cce(output, target)
 
-print(error)
+def train(mlp, minibatch_generator, epochs, cce):
+
+    for i in range(0,epochs):
+        for input_batch, target_batch in minibatch_generator:
+            output = mlp.forward(input_batch)
+            losses = cce(output, target_batch)
+            print(losses)
+            dcce = cce.backward(output,target_batch)
+            mlp.backward(dcce)
+
+
+train(mlp, minibatch_generator, 100000, cce)
 
 
 '''
+
+input_batch, target_batch = minibatch_generator.__next__()
+
+output = mlp.forward(input_batch)
+losses = cce(output, target_batch)
+print(losses)
+dcce = cce.backward(output,target_batch)
+print(dcce)
+mlp.backward(dcce)
+
+output = mlp.forward(input)
+
+input_batch, target_batch = minibatch_generator.__next__()
+
+output = mlp.forward(input_batch)
+# print(mlp.di_list)
+losses = cce(output, target_batch)
+dcce = cce.backward(output,target_batch)
+mlp.backward(dcce)
+
+error = cce(output, target)
+dcce = cce.backward(output, target)
+dsoftmax = output * (1-output)
+error_signal = dsoftmax * dcce
+
+print(error)
+print(dcce)
+print(dsoftmax)
+print(error_signal)
 
 for layer in mlp.layers:
     print(layer.weights_matrix.shape)
