@@ -11,20 +11,7 @@ class SigmoidActivation:
         :return: The sigmoid activations.
         """
 
-        activations = np.empty(shape=preactivation_matrix.shape)
-
-        # Iterate over each row of the preactivation matrix
-        for row_idx, _ in enumerate(preactivation_matrix):
-            # Compute the sigmoid for each element in the row
-            for col_idx, _ in enumerate(preactivation_matrix[0]):
-                activations[row_idx][col_idx] = 1 / (1 + np.exp(preactivation_matrix[row_idx][col_idx]))
-
-        # Return the computed sigmoid activations
-        return activations
-
-        # Alternatively, use the NumPy vectorized implementation: don't know if this is the correct way of implementing
-        # the above code with numpy
-        # return 1 / (1 + np.exp(-preactivation_matrix))
+        return 1 / (1 + np.exp(-preactivation_matrix))
 
     def backward(self, activation, error_signal):
         """

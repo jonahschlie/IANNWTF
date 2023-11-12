@@ -49,10 +49,9 @@ class Layer:
         :param activation: The activation from the current layer.
         """
 
-        weight_gradient = np.matmul(error_signal.T, activation)  # Calculation of the weight gradient
+        weight_gradient = np.dot(error_signal.T, activation)  # Calculation of the weight gradient
         # calculation of the mean gradient over the elements if the batch for weight updates
-        mean_gradient = np.mean(weight_gradient.T, axis=0)
-        self.weights_matrix = self.weights_matrix - 0.1 * mean_gradient  # updating weights
+        self.weights_matrix = self.weights_matrix + 0.001 * weight_gradient.T  # updating weights
 
     def bias_backward(self, error_signal):
         """
@@ -61,7 +60,7 @@ class Layer:
         :param error_signal: The error signal from the next layer.
         """
 
-        self.bias = self.bias - 0.1 * np.mean(error_signal, axis=0)
+        self.bias = self.bias + 0.001 * np.mean(error_signal, axis=0)
 
     def backward(self, activations, error_signal, index):
         """
@@ -74,14 +73,15 @@ class Layer:
         """
 
         # Backward pass through the activation function
-        error_signal = self.activation.backward(activations[index], error_signal)
+        if isinstance(self.activation, SigmoidActivation):
+            error_signal = self.activation.backward(activations[index], error_signal)
 
         # safe weights before update to use them for calculating error signal for next layer
-        weights = self.weights_matrix  
+        weights = self.weights_matrix
 
         # Update bias and weights based on the computed gradients
         self.bias_backward(error_signal)
         self.weight_backwards(error_signal, activations[index - 1])
 
         # Compute and return the error signal for the next layer
-        return np.matmul(error_signal, weights.T)
+        return error_signal.dot(weights.T)

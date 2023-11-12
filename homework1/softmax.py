@@ -11,21 +11,8 @@ class SoftmaxActivation:
         :return: The softmax activations.
         """
 
-        activations = np.empty(shape=preactivation_matrix.shape)
-
-        # Iterate over each row of the preactivation matrix
-        for row_idx, _ in enumerate(preactivation_matrix):
-            # Compute the softmax for each element in the row
-            for col_idx, _ in enumerate(preactivation_matrix[0]):
-                activations[row_idx][col_idx] = np.exp(preactivation_matrix[row_idx][col_idx]) / \
-                                                np.sum(np.exp(preactivation_matrix[row_idx]))
-
-        # Return the computed softmax activations
-        return activations
-
-
-        # e_x = np.exp(preactivation_matrix)
-        # return e_x / np.sum(e_x, axis=1, keepdims=True)
+        exp_x = np.exp(preactivation_matrix - np.max(preactivation_matrix, axis=-1, keepdims=True))
+        return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
     def backward(self, activation, dl):
         """

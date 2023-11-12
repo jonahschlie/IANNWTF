@@ -8,8 +8,8 @@ from cce import CCE
 
 DIGITS = load_digits()
 LOSS_PER_EPOCH = []
-MINIBATCHSIZE = 200
-NUM_EPOCHS = 20
+MINIBATCHSIZE = 64
+NUM_EPOCHS = 300
 ACCURACY_PER_EPOCH = []
 
 
@@ -95,8 +95,7 @@ def main():
     np.random.seed(42)
 
     # generating input-target-tuples from training data
-    target_input_tuples = [(2 * (DIGITS.data[i].astype(np.float32) / 16) -
-                            1, one_hot_encoding(DIGITS.target[i])) for i in range(len(DIGITS.data))]
+    target_input_tuples = [(DIGITS.data[i].astype(np.float32) / 16, one_hot_encoding(DIGITS.target[i])) for i in range(len(DIGITS.data))]
 
     mlp_object = MLP(2, [64, 10])  # initializing the MLP object
     cce_object = CCE()  # initializing the CCE object
@@ -108,10 +107,10 @@ def main():
     plt.ylabel("Categorical Cross Entropy Loss")
     plt.show()
     
-    #plt.plot(list(range(1, NUM_EPOCHS+1)), ACCURACY_PER_EPOCH)
-    #plt.xlabel("Epoch")
-    #plt.ylabel("Accuracy")
-    #plt.show()
+    plt.plot(list(range(1, NUM_EPOCHS+1)), ACCURACY_PER_EPOCH)
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy")
+    plt.show()
 
 
 
