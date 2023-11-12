@@ -50,17 +50,6 @@ def shuffle_data(batch_size, tuples_array):
 
         yield input_batch, target_batch
 
-
-# generating input-target-tuples from training data
-target_input_tuples = [(2 * (digits.data[i].astype(np.float32) / 16) -
-                        1, one_hot_encoding(digits.target[i])) for i in range(len(digits.data))]
-
-minibatch_generator_object = shuffle_data(1, target_input_tuples)
-
-mlp_object = MLP(2, [64, 10])  # initializing the MLP object
-cce_object = CCE()  # initializing the CCE object
-
-
 def train(mlp, minibatch_generator, epochs, cce):
     """
     This function trains a multi-layer perceptron (MLP) using a provided minibatch generator and a specified loss function.
@@ -75,64 +64,24 @@ def train(mlp, minibatch_generator, epochs, cce):
         for input_batch, target_batch in minibatch_generator:
             output = mlp.forward(input_batch)  # passing the input data through the network
             loss = cce(output, target_batch)  # calculating the loss value
-            print(loss)
+            #print(loss)
             dcce = cce.backward(output, target_batch)
             mlp.backward(dcce)  # updating the networks weights and biases through backpropagation
 
-
-train(mlp_object, minibatch_generator_object, 1, cce_object)
-
-'''
-
-input_batch, target_batch = minibatch_generator.__next__()
-
-output = mlp.forward(input_batch)
-losses = cce(output, target_batch)
-dcce = cce.backward(output,target_batch)
-mlp.backward(dcce)
-
-print("==============Neue Runde===============")
-
-input_batch, target_batch = minibatch_generator.__next__()
-
-output = mlp.forward(input_batch)
-losses = cce(output, target_batch)
-dcce = cce.backward(output,target_batch)
-mlp.backward(dcce)
-
-input_batch, target_batch = minibatch_generator.__next__()
-
-output = mlp.forward(input_batch)
-losses = cce(output, target_batch)
-print(losses)
-dcce = cce.backward(output,target_batch)
-print(dcce)
-mlp.backward(dcce)
-
-output = mlp.forward(input)
-
-input_batch, target_batch = minibatch_generator.__next__()
-
-output = mlp.forward(input_batch)
-# print(mlp.di_list)
-losses = cce(output, target_batch)
-dcce = cce.backward(output,target_batch)
-mlp.backward(dcce)
-
-error = cce(output, target)
-dcce = cce.backward(output, target)
-dsoftmax = output * (1-output)
-error_signal = dsoftmax * dcce
-
-print(error)
-print(dcce)
-print(dsoftmax)
-print(error_signal)
-
-for layer in mlp.layers:
-    print(layer.weights_matrix.shape)
+def main():
+    np.random.seed(42)
     
-plt.gray()
-plt.matshow(target_input_tuples[33][0])
-plt.show()
-'''
+    # generating input-target-tuples from training data
+    target_input_tuples = [(2 * (digits.data[i].astype(np.float32) / 16) -
+                            1, one_hot_encoding(digits.target[i])) for i in range(len(digits.data))]
+
+    minibatch_generator_object = shuffle_data(1, target_input_tuples)
+
+    mlp_object = MLP(2, [64, 10])  # initializing the MLP object
+    cce_object = CCE()  # initializing the CCE object
+    
+    train(mlp_object, minibatch_generator_object, 1, cce_object)
+
+
+if __name__ == "__main__":
+    main()
