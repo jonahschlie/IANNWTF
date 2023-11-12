@@ -11,7 +11,7 @@ class MLP:
         :param size_of_layers: A list containing the size of each layer.
         """
 
-        self.di_list = []  # List of activations during forward pass
+        self.activation_list = []  # List of activations during forward pass
         self.layers = []  # List to store the layers of the MLP
         self.num_layers = len(size_of_layers)
 
@@ -39,15 +39,14 @@ class MLP:
         :return: The output of the MLP after the forward pass.
         """
 
-        self.di_list.append(input_matrix)  # Store network input as activation for first layer
+        self.activation_list.append(input_matrix)  # Store network input as activation for first layer
         inputs = input_matrix
 
         # Iterate over the layers and perform forward pass
         for index, layer in enumerate(self.layers):
-            inputs = layer.forward(inputs, self.di_list)
+            inputs = layer.forward(inputs, self.activation_list)
 
         return inputs
-
 
     def backward(self, dcce):
         """
@@ -60,6 +59,6 @@ class MLP:
 
         # Iterate over the layers in reverse order and perform backward pass
         for index, layer in enumerate(reversed(self.layers)):
-            input = layer.backward(self.di_list, input, self.num_layers - index)
+            input = layer.backward(self.activation_list, input, self.num_layers - index)
 
-        self.di_list = []  # Clear the list of activations for the next iteration
+        self.activation_list = []  # Clear the list of activations for the next iteration
